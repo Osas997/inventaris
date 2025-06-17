@@ -16,7 +16,9 @@ class ApiResponse
         'data' => $responseData['data'],
         'meta' => $responseData['meta'] ?? null,
         'links' => $responseData['links'] ?? null,
-      ]), $code);
+      ], function ($value) {
+        return !is_null($value);
+      }), $code);
     }
 
     return response()->json([

@@ -11,28 +11,16 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class CategoryServiceImpl implements CategoryService
 {
   public function __construct(
-    protected CategoryRepository $categoryRepository
+    private CategoryRepository $categoryRepository
   ) {}
 
   public function getCategories()
   {
-    try {
-      return $this->categoryRepository->getCategories();
-    } catch (HttpException $th) {
-      throw new HttpResponseException(
-        ApiResponse::response($th->getMessage(), $th->getStatusCode() ?? 500)
-      );
-    }
+    return $this->categoryRepository->getCategories();
   }
 
   public function createCategory(array $categoryRequest)
   {
-    try {
-      return $this->categoryRepository->createCategory($categoryRequest);
-    } catch (HttpException $th) {
-      throw new HttpResponseException(
-        ApiResponse::response($th->getMessage(), $th->getStatusCode() ?? 500)
-      );
-    }
+    return $this->categoryRepository->createCategory($categoryRequest);
   }
 }

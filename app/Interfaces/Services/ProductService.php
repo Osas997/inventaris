@@ -9,7 +9,7 @@ interface ProductService
   public function createProduct(array $productRequest);
   public function updateProduct(array $productRequest, string $id);
   public function deleteProduct(string $id);
-  public function searchProduct(string $search);
+  public function searchProduct(array $search);
   public function updateStock(array $updateStockRequest);
   public function inventoryValue();
 }

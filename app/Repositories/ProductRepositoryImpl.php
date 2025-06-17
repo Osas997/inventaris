@@ -3,36 +3,58 @@
 namespace App\Repositories;
 
 use App\Interfaces\Repositories\ProductRepository;
+use App\Models\Product;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProductRepositoryImpl implements ProductRepository
 {
-  public function getProducts()
+  public function getProducts($search = null)
   {
-    // TODO: Implement getProducts() method.
+    $products = Product::with('category')->latest();
+
+    if ($search) {
+      if (!empty($search['name'])) {
+        $products->where('name', 'like', '%' . $search['name'] . '%');
+      }
+
+      if (!empty($search['category_id'])) {
+        $products->where('category_id', $search['category_id']);
+      }
+    }
+
+    return $products->get();
   }
 
   public function getProduct(string $id)
   {
-    // TODO: Implement getProduct() method.
+    return Product::with('category')->find($id);
   }
 
   public function createProduct(array $productRequest)
   {
-    // TODO: Implement createProduct() method.
+    return Product::create($productRequest);
   }
 
-  public function updateProduct(array $productRequest, string $id)
+  public function updateProduct(array $productRequest, Product $product)
   {
-    // TODO: Implement updateProduct() method.
+    $product->update($productRequest);
+    return $product;
   }
 
-  public function deleteProduct(string $id)
+  public function deleteProduct(Product $product)
   {
-    // TODO: Implement deleteProduct() method.
+    return $product->delete();
   }
 
-  public function updateStock(string $id, int $quantity)
+  public function updateStock(Product $product, int $quantity)
   {
-    // TODO: Implement updateStock() method.
+    $product->update(['stock_quantity' => $quantity]);
+    return $product;
+  }
+
+  public function calculateInventoryValue()
+  {
+    return Product::sum(DB::raw('price * stock_quantity'));
   }
 }

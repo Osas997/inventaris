@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 class AuthController extends Controller
 {
     public function __construct(
-        protected AuthService $authService
+        private AuthService $authService
     ) {}
 
     /**
@@ -49,7 +49,7 @@ class AuthController extends Controller
     {
         $credentials = $request->validated();
         $result = $this->authService->login($credentials);
-        return ApiResponse::responseWithData(new LoginResource($result), 'Login successfully');
+        return ApiResponse::responseWithData($result, 'Login successfully');
     }
 
     /**
@@ -100,7 +100,7 @@ class AuthController extends Controller
     public function refresh()
     {
         $result = $this->authService->refresh();
-        return ApiResponse::responseWithData(new LoginResource($result), 'Success refresh token');
+        return ApiResponse::responseWithData($result, 'Success refresh token');
     }
 
     /**

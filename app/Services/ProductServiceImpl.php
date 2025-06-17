@@ -2,47 +2,71 @@
 
 namespace App\Services;
 
+use App\Interfaces\Repositories\ProductRepository;
 use App\Interfaces\Services\ProductService;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ProductServiceImpl implements ProductService
 {
+  public function __construct(
+    private ProductRepository $productRepository
+  ) {}
+
   public function getProducts()
   {
-    // TODO: Implement getProducts() method.
+    return $this->productRepository->getProducts();
   }
 
   public function getProduct(string $id)
   {
-    // TODO: Implement getProduct() method.
+    $product = $this->productRepository->getProduct($id);
+
+    if (!$product) {
+      throw new NotFoundHttpException('Product not found');
+    }
+
+    return $product;
   }
 
   public function createProduct(array $productRequest)
   {
-    // TODO: Implement createProduct() method.
+    return $this->productRepository->createProduct($productRequest);
   }
 
   public function updateProduct(array $productRequest, string $id)
   {
-    // TODO: Implement updateProduct() method.
+    $product = $this->getProduct($id);
+    return $this->productRepository->updateProduct($productRequest, $product);
   }
 
   public function deleteProduct(string $id)
   {
-    // TODO: Implement deleteProduct() method.
+    $product = $this->getProduct($id);
+    return $this->productRepository->deleteProduct($product);
   }
 
-  public function searchProduct(string $search)
+  public function searchProduct(array $search)
   {
-    // TODO: Implement searchProduct() method.
+    $products = $this->productRepository->getProducts($search);
+    return $products;
   }
 
   public function updateStock(array $updateStockRequest)
   {
-    // TODO: Implement updateStock() method.
+    $product = $this->getProduct($updateStockRequest['product_id']);
+
+    if ($product->stock_quantity < $updateStockRequest['quantity_sold']) {
+      throw new BadRequestHttpException('Stock Tidak Mencukupi');
+    }
+
+    $stock = $product->stock_quantity - $updateStockRequest['quantity_sold'];
+    return $this->productRepository->updateStock($product, $stock);
   }
 
   public function inventoryValue()
   {
-    // TODO: Implement inventoryValue() method.
+    return $this->productRepository->calculateInventoryValue();
   }
 }

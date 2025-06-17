@@ -4,27 +4,24 @@ namespace App\Services;
 
 use App\Helper\ApiResponse;
 use App\Interfaces\Services\AuthService;
+use Error;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Throwable;
 
 class AuthServiceImpl implements AuthService
 {
   public function login(array $credentials)
   {
-    try {
-      if (!$token = Auth::attempt($credentials)) {
-        throw new NotFoundHttpException('Invalid username or password');
-      }
-
-      return $this->respondToken($token);
-    } catch (HttpException $th) {
-      throw new HttpResponseException(
-        ApiResponse::response($th->getMessage(), $th->getStatusCode() ?? 500)
-      );
+    if (!$token = Auth::attempt($credentials)) {
+      throw new NotFoundHttpException('Invalid username or password');
     }
+
+    return $this->respondToken($token);
   }
 
   public function refresh()
@@ -33,33 +30,19 @@ class AuthServiceImpl implements AuthService
       $token = Auth::refresh();
 
       return $this->respondToken($token);
-    } catch (HttpException $th) {
-      throw new HttpResponseException(
-        ApiResponse::response($th->getMessage(), $th->getStatusCode() ?? 500)
-      );
+    } catch (Throwable $th) {
+      throw new UnauthorizedHttpException("", "Invalid or expired token");
     }
   }
 
   public function logout()
   {
-    try {
-      Auth::logout();
-    } catch (HttpException $th) {
-      throw new HttpResponseException(
-        ApiResponse::response($th->getMessage(), $th->getStatusCode() ?? 500)
-      );
-    }
+    return Auth::logout();
   }
 
   public function me()
   {
-    try {
-      return Auth::user();
-    } catch (HttpException $th) {
-      throw new HttpResponseException(
-        ApiResponse::response($th->getMessage(), $th->getStatusCode() ?? 500)
-      );
-    }
+    return Auth::user();
   }
 
   private function respondToken($token)

@@ -1,0 +1,2 @@
+tymon/jwt-auth
+darkaonline/l5-swagger
