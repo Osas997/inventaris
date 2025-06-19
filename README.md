@@ -60,3 +60,5 @@ http://localhost:8000/api/docs
 username=admin
 password=password
 ```
+
+### Link Video https://www.youtube.com/watch?v=NDnhCXbWk3s
