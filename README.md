@@ -39,7 +39,7 @@ DB_PASSWORD=
 ### 6. Jalankan Migrations dan Seeder
 
 ```bash
-php artisan migrate -seed
+php artisan migrate --seed
 ```
 
 ### 6. Jalankan Server
